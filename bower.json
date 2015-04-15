@@ -1,0 +1,23 @@
+{
+  "name": "angular-eha.retriable",
+  "description": "Define retriable work flows for interacting with the remote DB.",
+  "version": "0.0.0",
+  "authors": [
+    "Remy Sharp <remy@remysharp.com>"
+  ],
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "homepage": "https://github.com/eHealthAfrica/",
+  "keywords": "",
+  "main": "dist/retriable.js",
+  "license": "Apache-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
