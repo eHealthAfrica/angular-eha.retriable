@@ -1,6 +1,12 @@
-# angular-eha.retriable.retriable
+# angular-eha.retriable
 
 [![Build Status](https://travis-ci.org/eHealthAfrica/retriable.svg)](https://travis-ci.org/eHealthAfrica/retriable) ![Dependecy Status](https://david-dm.org/eHealthAfrica/retriable.svg) ![Dev Dependecy Status](https://david-dm.org/eHealthAfrica/retriable/dev-status.svg)
+
+## TODO
+
+- [ ] Test configuration
+- [ ] Bower integration
+- [ ] Build
 
 ## Usage
 
@@ -8,11 +14,11 @@
 
 Install with npm:
 
-    npm install --save angular-eha.retriable.retriable
+    npm install --save angular-eha.retriable
 
 Or alternatively bower:
 
-    bower install --save angular-eha.retriable.retriable
+    bower install --save angular-eha.retriable
 
 ### Distribution bundle
 
@@ -20,7 +26,7 @@ Or alternatively bower:
 - *dist/retriable.min.js*
 
 
-Then simply add `eha.retriable.retriable` as dependencies somewhere in your project that makes sense and you're good to go.
+Then simply add `eha.retriable` as dependencies somewhere in your project that makes sense and you're good to go.
 
 #### A note on wiredep
 
@@ -47,10 +53,10 @@ Then you're free to include whichever bundle you prefer in what ever manner you 
   <head>
     <title>Back Button Example</title>
     <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-eha.retriable.retriable/dist/retriable.js"></script>
+    <script src="bower_components/angular-eha.retriable/dist/retriable.js"></script>
     <script>
     angular.module('backButtonExample', [
-      'eha.retriable.retriable'
+      'eha.retriable'
     ]);
     </script>
   </head>
@@ -75,11 +81,11 @@ Then you're free to include whichever bundle you prefer in what ever manner you 
 
 ```bash
 # Fork the upstream repo on github and pull down your fork
-git clone git@github.com:yourusername/angular-eha.retriable.retriable.git
+git clone git@github.com:yourusername/angular-eha.retriable.git
 # change into project folder
-cd angular-eha.retriable.retriable
+cd angular-eha.retriable
 # Add the upstream as a remote
-git remote add upstream  git@github.com:eHealthAfrica/angular-eha.retriable.retriable.git
+git remote add upstream  git@github.com:eHealthAfrica/angular-eha.retriable.git
 # Install the dev dependencies
 npm install
 ```
@@ -166,7 +172,7 @@ Publishing to bower is slightly simpler in so far that you only have to do it on
 e.g.
 
 ```
-bower register angular-eha.retriable.retriable <upstream_repo_url>
+bower register angular-eha.retriable <upstream_repo_url>
 ```
 ## License
 

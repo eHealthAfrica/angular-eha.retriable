@@ -1,12 +1,12 @@
 {
-  "name": "angular-eha.retriable.retriable",
+  "name": "angular-eha.retriable",
   "version": "0.0.0",
   "description": "Define retriable work flows for interacting with the remote DB.",
   "main": "dist/retriable.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "coverage": "grunt coveralls"
   },
-  
   "author": "Remy Sharp <remy@remysharp.com>",
   "license": "Apache-2.0",
   "keywords": "",
@@ -23,19 +23,22 @@
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-copy": "^0.7.0",
-    "grunt-contrib-uglify": "^0.8.0",
     "grunt-contrib-jshint": "^0.11.0",
+    "grunt-contrib-uglify": "^0.8.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-jscs": "^1.5.0",
     "grunt-html2js": "^0.3.0",
+    "grunt-jscs": "^1.5.0",
     "grunt-karma": "^0.10.1",
     "grunt-ng-annotate": "^0.10.0",
     "i": "^0.3.2",
+    "jasmine-core": "^2.2.0",
     "karma": "^0.12.31",
     "karma-chai": "^0.1.0",
     "karma-chai-plugins": "^0.2.4",
-    "karma-coverage": "^0.2.7",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-coverage": "^0.3.0",
     "karma-firefox-launcher": "^0.1.4",
+    "karma-jasmine": "^0.1.5",
     "karma-mocha": "^0.1.10",
     "karma-sinon": "^1.0.4",
     "karma-sinon-chai": "^0.3.0",
@@ -45,5 +48,9 @@
     "optimist": "^0.6.1",
     "sinon": "^1.12.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "grunt-karma-coveralls": "^2.5.3",
+    "karma-coverage": "^0.3.0",
+    "mocha": "^2.2.4"
+  }
 }
