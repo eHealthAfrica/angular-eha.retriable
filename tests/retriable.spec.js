@@ -15,14 +15,18 @@
 
   var noopPromise = function() {};
 
+  function digest() {
+    inject(function($rootScope) {
+      $rootScope.$digest();
+    });
+  }
+
   function digestIt(original) {
     return function(description, testFn) {
       var isAsync = testFn.length >= 1;
       var fn = !isAsync ? testFn : function(done) {
         testFn(done);
-        inject(function($rootScope) {
-          $rootScope.$digest();
-        });
+        digest();
       };
       original(description, fn);
     };
@@ -31,8 +35,7 @@
   // test helper/override thing
   it = digestIt(it); // jshint ignore:line
 
-  // mock the loginService
-  beforeEach(module('eha.retriable', function($provide) {
+  beforeEach(module(function($provide) {
     var mockLoginService = {};
     mockLoginService.logout = noopPromise;
     mockLoginService.maybeShowLoginUi = noopPromise;
@@ -40,22 +43,30 @@
     $provide.value('loginService', mockLoginService);
   }));
 
-  beforeEach(module(function(_retriableProvider_) {
-    retriableProvider = _retriableProvider_;
-  }));
+  // mock the loginService
+  beforeEach(function() {
+    angular.module('eha.retriable.test', function() {
+    }).config(function(_retriableProvider_) {
+      retriableProvider = _retriableProvider_;
+    });
 
-  describe('Retriable Workflows', function() {
-    beforeEach(inject(function(_retriable_, _loginService_, _$q_) {
-      retriable = _retriable_;
+    // I don't quite understand why this works, but I need it to do config
+    // magic.
+    module('eha.retriable', 'eha.retriable.test');
+
+    inject(function(_$q_, _retriable_, _loginService_) {
       $q = _$q_;
+      retriable = _retriable_;
       loginService = _loginService_;
 
       // hook spies onto loginService
       sinon.stub(loginService, 'logout').returns($q.when({}));
       sinon.stub(loginService, 'maybeShowLoginUi').returns($q.when({}));
       sinon.stub(loginService, 'renew').returns($q.when({}));
-    }));
+    });
+  });
 
+  describe('Retriable Workflows', function() {
     it('should expose a method', function() {
       assert.isDefined(retriable);
     });
@@ -63,10 +74,6 @@
     it('should be a promise', function() {
       var flow = retriable(function() {});
       assert.isDefined(flow().then);
-    });
-
-    it('should be configurable', function() {
-      assert.isDefined(retriableProvider.setNotice);
     });
 
     it('should execute the workflow, after possibly showing login ui',
@@ -201,49 +208,24 @@
         done();
       });
     });
-
-    it('should allow for custom notification', function(done) {
-      loginService.maybeShowLoginUi.returns($q.reject('cancelled'));
-
-      var flowSpy = sinon.stub().returns($q.when({result: true}));
-
-      var flow = retriable(function() {
-        return flowSpy();
-      });
-
-      flow().catch(function(res) {
-        expect(loginService.maybeShowLoginUi.called);
-        // should have cancelled flow
-        expect(flowSpy.notCalled);
-        // resp from login dialog
-        expect(res).to.equal('cancelled');
-
-        done();
-      });
-    });
   });
 
   describe('Retriable provider is configurable', function() {
+    it('tests the providers internal function', function() {
+      assert.isDefined(retriableProvider.setNotice);
+    });
+
     it('should support synchronous notification', function(done) {
       var spy = sinon.spy(function() {
         return true;
       });
-      assert.isDefined(retriableProvider.setNotice);
+
       retriableProvider.setNotice(spy);
 
-      inject(function(_retriable_, _loginService_, _$q_) {
-        retriable = _retriable_;
-        $q = _$q_;
-        loginService = _loginService_;
-
-        // hook spies onto loginService
-        sinon.stub(loginService, 'logout').returns($q.when({}));
-        sinon.stub(loginService, 'maybeShowLoginUi').returns($q.when({}));
-        sinon.stub(loginService, 'renew').returns($q.when({}));
-
+      inject(function(retriable) {
         var flowSpy = sinon.spy(function() {
           // accept when we have renewed the session
-          if (loginService.renew.called) {
+          if (loginService.renew.calledTwice) {
             return $q.when({result: true});
           }
 
@@ -254,13 +236,14 @@
           return flowSpy();
         });
 
-        flow().then(function(res) {
-          expect(flowSpy.callCount).to.equal(2);
-          expect(loginService.renew.called);
-          expect(spy.called);
-          expect(res.result).to.equal(true);
-          done();
-        });
+        flow()
+          .then(function(res) {
+            expect(flowSpy.callCount).to.equal(3);
+            expect(loginService.renew.called);
+            expect(spy.called);
+            expect(res.result).to.equal(true);
+            done();
+          });
       });
     });
 
@@ -268,31 +251,24 @@
       var innerSpy = sinon.spy();
       var spy = sinon.spy(function() {
         var deferred = $q.defer();
+
+        // simulate the user doing some async action
         setTimeout(function() {
-          console.log('calling');
           innerSpy();
           deferred.resolve(true);
-        }, 1000);
+          // we needed to flush this new promise...unsure exactly why though
+          digest();
+        }, 100);
 
         return deferred.promise;
       });
 
-      assert.isDefined(retriableProvider.setNotice);
       retriableProvider.setNotice(spy);
 
-      inject(function(_retriable_, _loginService_, _$q_) {
-        retriable = _retriable_;
-        $q = _$q_;
-        loginService = _loginService_;
-
-        // hook spies onto loginService
-        sinon.stub(loginService, 'logout').returns($q.when({}));
-        sinon.stub(loginService, 'maybeShowLoginUi').returns($q.when({}));
-        sinon.stub(loginService, 'renew').returns($q.when({}));
-
+      inject(function(retriable) {
         var flowSpy = sinon.spy(function() {
           // accept when we have renewed the session
-          if (loginService.renew.called) {
+          if (loginService.renew.calledTwice) {
             return $q.when({result: true});
           }
 
@@ -304,13 +280,57 @@
         });
 
         flow().then(function(res) {
-          expect(flowSpy.callCount).to.equal(2);
+          expect(flowSpy.callCount).to.equal(3);
           expect(loginService.renew.called);
-          expect(spy.called);
+          expect(spy.callCount).to.equal(1);
           expect(innerSpy.callCount).to.equal(1);
           expect(res.result).to.equal(true);
           done();
         });
+      });
+    });
+  });
+
+  it('should be prevented by a async rejection', function(done) {
+    var innerSpy = sinon.spy();
+    var rejectReason = 'user rejected';
+    var spy = sinon.spy(function() {
+      var deferred = $q.defer();
+
+      // simulate the user doing some async action
+      setTimeout(function() {
+        innerSpy();
+        deferred.reject(new Error(rejectReason));
+        // we needed to flush this new promise...unsure exactly why though
+        digest();
+      }, 100);
+
+      return deferred.promise;
+    });
+
+    retriableProvider.setNotice(spy);
+
+    inject(function(retriable) {
+      var flowSpy = sinon.spy(function() {
+        // accept when we have renewed the session
+        if (loginService.renew.calledTwice) {
+          return $q.when({result: true});
+        }
+
+        return $q.reject(error401);
+      });
+
+      var flow = retriable(function() {
+        return flowSpy();
+      });
+
+      flow().catch(function(error) {
+        expect(flowSpy.callCount).to.equal(2);
+        expect(loginService.renew.called);
+        expect(spy.callCount).to.equal(1);
+        expect(innerSpy.callCount).to.equal(1);
+        expect(error.message).to.equal(rejectReason);
+        done();
       });
     });
   });
