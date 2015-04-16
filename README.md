@@ -2,13 +2,62 @@
 
 [![Build Status](https://travis-ci.org/eHealthAfrica/retriable.svg)](https://travis-ci.org/eHealthAfrica/retriable) ![Dependecy Status](https://david-dm.org/eHealthAfrica/retriable.svg) ![Dev Dependecy Status](https://david-dm.org/eHealthAfrica/retriable/dev-status.svg)
 
-## TODO
-
-- [ ] Test configuration
-- [ ] Bower integration
-- [ ] Build
-
 ## Usage
+
+If you're using wiredep, then all you need to do is add `eha.retriable` as an angular module dependency somewhere sensible in your app. In the absense of wiredep, you'll need to manually bundle `dist/retriable.js`.
+
+### Configuration
+
+The module can be configured through the `ehaRetriableProvider` via a config block.
+
+The `setNotice` will be used when a `401` is returned to inform the user that there's a login failure (whereby retriable will *retry* to log them in). The callback for `setNotice` can be synchronous or asynchronous.
+
+#### Synchronous configuration
+
+```js
+app.config(function(ehaRetriableProvider) {
+  ehaRetriableProvider.setNotice(function () {
+    growl.error('Failed to login');
+  });
+});
+```
+#### Asynchronous configuration
+
+```js
+app.config(function(ehaRetriableProvider) {
+  ehaRetriableProvider.setNotice(function () {
+    var deferred = $q.defer();
+
+    // contrived example
+    requestAnimationFrame(function () {
+      // show the user a sweet alert
+      swal({
+        text: "The auto sign in failed, do you want to keep trying?",
+        type: "warning",
+        showCancelButton: true
+      }, function(confirmed){
+        if (isConfirm) {
+          deferred.resolve();
+        } else {
+          deferred.reject(new Error('User cancelled'));
+        }
+      });
+    });
+
+    return deferred.promise;
+  });
+});
+```
+
+## ehaRetriable
+
+### `ehaRetriable(workflow)`
+
+`workflow` is the callback you want to run through once a connection has been secured.
+
+**n.b. The result is a retriable *function* that can be re-used throughout your code.**
+
+The retriable function (result from `ehaRetriable`) returns a Promise/A+ object.
 
 ## Installation
 
@@ -48,22 +97,44 @@ Then you're free to include whichever bundle you prefer in what ever manner you 
 
 ### Example
 
-```html
-<html ng-app="backButtonExample">
-  <head>
-    <title>Back Button Example</title>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-eha.retriable/dist/retriable.js"></script>
-    <script>
-    angular.module('backButtonExample', [
-      'eha.retriable'
-    ]);
-    </script>
-  </head>
-  <body>
-    <!-- Put an example here! -->
-  </body>
-</html>
+```js
+angular.module('eha.myApp')
+  .config(function (ehaRetriableProvider) {
+    ehaRetriableProvider.setNotice(function () {
+      // this is an example of a synchronous notice, where the user
+      // isn't required to input.
+      growl.error(gettextCatalog.getString('Login failed.'));
+
+      // if you need the user to do something, make sure to return
+      // a promise instead, and retriable will wait for the promise
+      // to resolve or reject.
+    });
+  })
+  .service('idService', function(
+    ehaRetriable
+  ) {
+    // ...
+    // before hitting the database to get some values, first try
+    // to reconnect to the database and re-auth if neccessary
+    var getNewIds = ehaRetriable(function() {
+      return $http({
+        url: someUrl,
+        method: 'GET',
+        params: { limit: ids },
+        withCredentials: true
+      }).then(function(response) {
+        return utility.pluck(response.data, 'id');
+      })
+      .then(storeNewIds);
+    });
+
+    // ... later
+
+    // invoke the getNewIds request
+    getNewIds().then(function () {
+      // do something
+    });
+  });
 ```
 
 ## Contributing
@@ -76,16 +147,13 @@ Then you're free to include whichever bundle you prefer in what ever manner you 
 - grunt-cli (0.1.7)
 - grunt (0.4.5)
 
-
 ### Installation
 
 ```bash
 # Fork the upstream repo on github and pull down your fork
-git clone git@github.com:yourusername/angular-eha.retriable.git
+git clone git@github.com:eHealthAfrica/angular-eha.retriable.git
 # change into project folder
 cd angular-eha.retriable
-# Add the upstream as a remote
-git remote add upstream  git@github.com:eHealthAfrica/angular-eha.retriable.git
 # Install the dev dependencies
 npm install
 ```
@@ -103,7 +171,7 @@ The test suite is configured to run in Firefox and is powered by:
 - Chai (as promised)
 - Sinon (chai)
 
-The library is conducive to TDD.  `grunt test:watch` is your friend. As modules (and templates) are exposed on their own namespace you can easily isolate areas of the code base for true unit testing without being forced to pull in the whole library or stub/mock modules irrelevant to the feature(s) you're testing.
+The library is conducive to TDD. `grunt test:watch` is your friend. As modules (and templates) are exposed on their own namespace you can easily isolate areas of the code base for true unit testing without being forced to pull in the whole library or stub/mock modules irrelevant to the feature(s) you're testing.
 
 #### Running Tests
 
@@ -122,26 +190,6 @@ grunt test:watch
 ### Local Development
 
 Local development is made easy, simply make use of either `npm link` or `bower link` to link the local component to your client application and then use `grunt watch` to continuously build the project.
-
-### Transpiling templates (html2js)
-
-Transpiling our html templates into js allows us to neatly push them into the `$templateCache`.
-
-To transpile the templates it's another simple grunt command:
-
-```bash
-grunt templates
-```
-
-This will compile the templates to the `dist/` folder. But it's probably best to avoid this all together. Both the `grunt test` and `grunt release` commands take care of all of this for you.
-
-If you need to override the default template, simply replace what's already in the `$templateCache` with what ever you want. One way to achieve this is like this:
-
-```html
-<script id="templates/back-button.directive.tpl.html" type="text/html">
-    <button>I'm a button!</button>
-</script>
-```
 
 ## Release Process
 

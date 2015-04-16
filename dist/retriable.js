@@ -3,7 +3,7 @@
   // , growl, gettextCatalog
   var ngModule = angular.module('eha.retriable', []);
 
-  ngModule.provider('ehaRetriable', function ehaRetriable() {
+  ngModule.provider('retriable', function() {
     // the notification is a passthrough promise to start with
     var notice401;
 
@@ -12,7 +12,7 @@
       notice401 = fn;
     };
 
-    this.$get = function($q, loginService) {
+    this.$get = ['$q', 'loginService', function($q, loginService) {
       if (!notice401) {
         notice401 = function() {
           return true;
@@ -79,7 +79,7 @@
 
         };
       };
-    };
+    }];
   });
 
   // Check for and export to commonjs environment

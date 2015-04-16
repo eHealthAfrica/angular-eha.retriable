@@ -46,17 +46,17 @@
   // mock the loginService
   beforeEach(function() {
     angular.module('eha.retriable.test', function() {
-    }).config(function(_retriableProvider_) {
-      retriableProvider = _retriableProvider_;
+    }).config(function(_ehaRetriableProvider_) {
+      retriableProvider = _ehaRetriableProvider_;
     });
 
     // I don't quite understand why this works, but I need it to do config
     // magic.
     module('eha.retriable', 'eha.retriable.test');
 
-    inject(function(_$q_, _retriable_, _loginService_) {
+    inject(function(_$q_, _ehaRetriable_, _loginService_) {
       $q = _$q_;
-      retriable = _retriable_;
+      retriable = _ehaRetriable_;
       loginService = _loginService_;
 
       // hook spies onto loginService
@@ -222,7 +222,8 @@
 
       retriableProvider.setNotice(spy);
 
-      inject(function(retriable) {
+      inject(function(ehaRetriable) {
+        var retriable = ehaRetriable;
         var flowSpy = sinon.spy(function() {
           // accept when we have renewed the session
           if (loginService.renew.calledTwice) {
@@ -265,7 +266,8 @@
 
       retriableProvider.setNotice(spy);
 
-      inject(function(retriable) {
+      inject(function(ehaRetriable) {
+        var retriable = ehaRetriable;
         var flowSpy = sinon.spy(function() {
           // accept when we have renewed the session
           if (loginService.renew.calledTwice) {
@@ -310,7 +312,8 @@
 
     retriableProvider.setNotice(spy);
 
-    inject(function(retriable) {
+    inject(function(ehaRetriable) {
+      var retriable = ehaRetriable;
       var flowSpy = sinon.spy(function() {
         // accept when we have renewed the session
         if (loginService.renew.calledTwice) {
