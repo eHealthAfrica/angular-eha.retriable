@@ -12,7 +12,8 @@
       notice401 = fn;
     };
 
-    this.$get = function($q, loginService) {
+    this.$get = function($q, ehaLoginService) {
+      var loginService = ehaLoginService;
       if (!notice401) {
         notice401 = function() {
           return true;

@@ -36,11 +36,11 @@
   it = digestIt(it); // jshint ignore:line
 
   beforeEach(module(function($provide) {
-    var mockLoginService = {};
-    mockLoginService.logout = noopPromise;
-    mockLoginService.maybeShowLoginUi = noopPromise;
-    mockLoginService.renew = noopPromise;
-    $provide.value('loginService', mockLoginService);
+    // var mockLoginService = {};
+    // mockLoginService.logout = noopPromise;
+    // mockLoginService.maybeShowLoginUi = noopPromise;
+    // mockLoginService.renew = noopPromise;
+    // $provide.value('loginService', mockLoginService);
   }));
 
   // mock the loginService
@@ -54,10 +54,10 @@
     // magic.
     module('eha.retriable', 'eha.retriable.test');
 
-    inject(function(_$q_, _ehaRetriable_, _loginService_) {
+    inject(function(_$q_, _ehaRetriable_, _ehaLoginService_) {
       $q = _$q_;
       retriable = _ehaRetriable_;
-      loginService = _loginService_;
+      loginService = _ehaLoginService_;
 
       // hook spies onto loginService
       sinon.stub(loginService, 'logout').returns($q.when({}));

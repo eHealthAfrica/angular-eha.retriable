@@ -19,5 +19,8 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "angular-eha.login.login-service": "git@github.com:eHealthAfrica/angular-eha.login-service.git"
+  }
 }

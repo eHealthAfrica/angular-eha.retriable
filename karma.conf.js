@@ -1,5 +1,9 @@
 // Karma configuration
 // Generated on Thu Feb 19 2015 11:25:37 GMT+0100 (CET)
+var bowerJS = require('wiredep')({
+  exclude: [/jasmine$/],
+  devDependencies: true
+}).js;
 
 module.exports = function(config) {
   config.set({
@@ -14,13 +18,13 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: [
+    files: bowerJS.concat([
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'src/**/*.js',
       'tests/**/*.spec.js',
       '.tmp/template.js'
-    ],
+    ]),
 
     // list of files to exclude
     exclude: [

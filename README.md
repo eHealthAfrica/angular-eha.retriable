@@ -2,6 +2,10 @@
 
 [![Build Status](https://travis-ci.org/eHealthAfrica/retriable.svg)](https://travis-ci.org/eHealthAfrica/retriable) ![Dependecy Status](https://david-dm.org/eHealthAfrica/retriable.svg) ![Dev Dependecy Status](https://david-dm.org/eHealthAfrica/retriable/dev-status.svg)
 
+# Warning: WIP
+
+![Under construction](https://jsbin-user-assets.s3.amazonaws.com/rem/graphics-under-construction-878725.gif)
+
 ## Usage
 
 If you're using wiredep, then all you need to do is add `eha.retriable` as an angular module dependency somewhere sensible in your app. In the absense of wiredep, you'll need to manually bundle `dist/retriable.js`.
