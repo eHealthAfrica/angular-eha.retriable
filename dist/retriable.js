@@ -1,9 +1,9 @@
 ;(function() {
   'use strict';
   // , growl, gettextCatalog
-  var ngModule = angular.module('eha.retriable', []);
+  var ngModule = angular.module('eha.retriable', ['eha.login-service']);
 
-  ngModule.provider('retriable', function() {
+  ngModule.provider('ehaRetriable', function ehaRetriable() {
     // the notification is a passthrough promise to start with
     var notice401;
 
@@ -12,7 +12,8 @@
       notice401 = fn;
     };
 
-    this.$get = ['$q', 'loginService', function($q, loginService) {
+    this.$get = ['$q', 'ehaLoginService', function($q, ehaLoginService) {
+      var loginService = ehaLoginService;
       if (!notice401) {
         notice401 = function() {
           return true;
