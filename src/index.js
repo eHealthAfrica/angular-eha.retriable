@@ -1,7 +1,7 @@
 ;(function() {
   'use strict';
   // , growl, gettextCatalog
-  var ngModule = angular.module('eha.retriable', []);
+  var ngModule = angular.module('eha.retriable', ['eha.login-service']);
 
   ngModule.provider('ehaRetriable', function ehaRetriable() {
     // the notification is a passthrough promise to start with
