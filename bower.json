@@ -21,6 +21,6 @@
     "tests"
   ],
   "dependencies": {
-    "angular-eha.login.login-service": "git@github.com:eHealthAfrica/angular-eha.login-service.git"
+    "angular-eha.login-service": "git@github.com:eHealthAfrica/angular-eha.login-service.git"
   }
 }
