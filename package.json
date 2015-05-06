@@ -1,6 +1,6 @@
 {
   "name": "angular-eha.retriable",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Define retriable work flows for interacting with the remote DB.",
   "main": "dist/retriable.js",
   "scripts": {
