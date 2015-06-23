@@ -9,8 +9,9 @@
   },
   "author": "Remy Sharp <remy@remysharp.com>",
   "license": "Apache-2.0",
-  "keywords": "",
+  "keywords": [],
   "homepage": "https://github.com/eHealthAfrica/",
+  "dependencies": {},
   "devDependencies": {
     "angular": "^1.3.13",
     "angular-mocks": "^1.3.13",
@@ -49,5 +50,15 @@
     "optimist": "^0.6.1",
     "sinon": "^1.12.2",
     "wiredep": "^2.2.2"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eHealthAfrica/angular-eha.retriable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eHealthAfrica/angular-eha.retriable/issues"
   }
 }
