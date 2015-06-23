@@ -58,10 +58,41 @@ app.config(function(ehaRetriableProvider) {
 ### `ehaRetriable(workflow)`
 
 `workflow` is the callback you want to run through once a connection has been secured.
+The workflow *should* return a promise.
 
 **n.b. The result is a retriable *function* that can be re-used throughout your code.**
 
 The retriable function (result from `ehaRetriable`) returns a Promise/A+ object.
+
+Any arguments you pass into the retriable will be passed into the workflow.
+
+### Catching errors in workflows
+
+Sometimes its nice to catch errors in workflows, for example if a workflow tries to GET a document, and it's not found,
+we might wanna PUT it anyway. When doing this, make sure to propagate any errors except the specific ones you want to catch,
+otherwise the retriable wont work.
+
+
+```js
+  var getAndSave = ehaRetriable(function(doc) {
+    return myDB.get(doc._id)
+      .catch(function(err) {
+        // If the doc is not found, ignore that,
+        if(err.status === 404) {
+          return {};
+        }
+        // All other errors are propagated
+        return $q.reject(err);
+      })
+      .then(function(existingDoc) {
+        if(exisitingDoc._rev) {
+          doc._rev = existingDoc._rev;
+        }
+
+        return myDB.put(doc);
+      });
+  });
+```
 
 ## Installation
 
